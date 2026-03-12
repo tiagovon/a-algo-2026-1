@@ -1,0 +1,19 @@
+A complexidade do algoritmo é: O(n)
+
+Motivo
+Cada chamada recursiva reduz n em 1 unidade.
+
+Número de chamadas:
+fatorial(n)
+fatorial(n-1)
+fatorial(n-2)
+...
+fatorial(1)
+
+Total de chamadas:
+
+n chamadas
+
+Portanto:
+T(n) = T(n-1) + O(1)
+Resolvendo a recorrência: T(n) = O(n)
