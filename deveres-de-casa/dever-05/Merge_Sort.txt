@@ -1,0 +1,64 @@
+Aqui está a resolução formatada em texto puro, sem formatações complexas ou símbolos matemáticos que quebrem no Bloco de Notas. Você pode copiar o bloco abaixo e colar direto no seu arquivo .txt:
+
+DEVER DE CASA - CALCULO DE COMPLEXIDADE
+
+ALGORITMO DE ORDENACAO MERGE SORT
+
+O Merge Sort utiliza a estrategia de "dividir para conquistar". Ele divide o vetor recursivamente pela metade ate chegar a elementos unicos e, em seguida, intercala (merge) essas metades de forma ordenada.
+
+Recorrencia: O tempo para ordenar um vetor de tamanho "n" e o tempo de ordenar duas metades de tamanho "n/2", mais o tempo para intercalar, que e linear Theta(n).
+Equacao: T(n) = 2T(n/2) + Theta(n)
+
+Calculo (Teorema Mestre): Sendo a=2, b=2 e f(n)=n.
+Calculamos n^(log_b a) => n^(log_2 2) => n^1 => n.
+Como f(n) e igual a n^(log_b a), caimos no Caso 2 do Teorema Mestre.
+
+Complexidade Final: T(n) = Theta(n * log n)
+
+MULTIPLICACAO DE MATRIZES
+
+O algoritmo classico para multiplicar duas matrizes quadradas de tamanho n x n exige calcular o produto escalar de cada linha da primeira por cada coluna da segunda.
+
+Calculo: O algoritmo tradicional possui tres lacos de repeticao aninhados:
+
+Um laco para percorrer as linhas da matriz A (n vezes).
+
+Um laco para percorrer as colunas da matriz B (n vezes).
+
+Um laco interno para somar os produtos (n vezes).
+
+Complexidade Final: Como sao 3 lacos aninhados de tamanho n, a complexidade de tempo e Theta(n^3).
+
+RECORRENCIAS
+
+Para resolver, aplicamos o Teorema Mestre para equacoes do tipo: T(n) = aT(n/b) + f(n)
+
+a) T(n) = 2T(n/4) + raiz(n)
+
+Parametros: a=2, b=4, f(n) = raiz(n) [que e o mesmo que n^0.5]
+
+Comparacao: n^(log_b a) => n^(log_4 2) => n^0.5 => raiz(n).
+
+Analise: Como f(n) cresce na mesma proporcao que a base (Caso 2), multiplicamos por log(n).
+
+Solucao: T(n) = Theta(raiz(n) * log n)
+
+b) T(n) = 2T(n/4) + n
+
+Parametros: a=2, b=4, f(n) = n^1
+
+Comparacao: n^(log_b a) => n^(log_4 2) => n^0.5.
+
+Analise: Aqui, f(n) cresce mais rapido que a base, pois n > n^0.5 (Caso 3). O termo f(n) domina o custo.
+
+Solucao: T(n) = Theta(n)
+
+c) T(n) = 16T(n/4) + n^2
+
+Parametros: a=16, b=4, f(n) = n^2
+
+Comparacao: n^(log_b a) => n^(log_4 16) => n^2.
+
+Analise: Novamente, f(n) e exatamente igual a base calculada (n^2 = n^2). Caimos no Caso 2.
+
+Solucao: T(n) = Theta(n^2 * log n)
