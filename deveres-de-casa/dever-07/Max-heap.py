@@ -1,136 +1,109 @@
 class Paciente:
-    def __init__(self, id_paciente, nome, nivel_dor):
-        self.id = id_paciente
+    def __init__(self, nome, dor):
         self.nome = nome
-        self.nivel_dor = nivel_dor  # Prioridade (1 a 10)
+        self.dor = dor
 
     def __repr__(self):
-        return f"[{self.nome} (Dor: {self.nivel_dor})]"
+        return f"{self.nome} - dor {self.dor}"
 
 
-class TriagemMaxHeap:
+class MaxHeap:
     def __init__(self):
         self.heap = []
-        # Mapeia o ID do paciente para o seu índice atual no array 'heap'
-        self.posicao_paciente = {}
 
-    def _subir(self, i):
-        """Move o elemento para cima para manter a propriedade do Max-Heap."""
-        while i > 0:
-            pai = (i - 1) // 2
-            if self.heap[i].nivel_dor > self.heap[pai].nivel_dor:
-                # Troca os elementos no heap
-                self.heap[i], self.heap[pai] = self.heap[pai], self.heap[i]
-                # Atualiza as posições no dicionário
-                self.posicao_paciente[self.heap[i].id] = i
-                self.posicao_paciente[self.heap[pai].id] = pai
-                i = pai
-            else:
-                break
-
-    def _descer(self, i):
-        """Move o elemento para baixo para manter a propriedade do Max-Heap."""
-        tamanho = len(self.heap)
-        while 2 * i + 1 < tamanho:
-            filho_esquerdo = 2 * i + 1
-            filho_direito = 2 * i + 2
-            maior = filho_esquerdo
-
-            if filho_direito < tamanho and self.heap[filho_direito].nivel_dor > self.heap[filho_esquerdo].nivel_dor:
-                maior = filho_direito
-
-            if self.heap[maior].nivel_dor > self.heap[i].nivel_dor:
-                # Troca os elementos
-                self.heap[i], self.heap[maior] = self.heap[maior], self.heap[i]
-                # Atualiza as posições
-                self.posicao_paciente[self.heap[i].id] = i
-                self.posicao_paciente[self.heap[maior].id] = maior
-                i = maior
-            else:
-                break
-
-    def inserir_paciente(self, paciente):
-        """Adiciona um novo paciente na fila de triagem."""
+    def inserir(self, paciente):
         self.heap.append(paciente)
-        idx = len(self.heap) - 1
-        self.posicao_paciente[paciente.id] = idx
-        self._subir(idx)
-        print(f"➕ {paciente.nome} deu entrada com nível de dor {paciente.nivel_dor}.")
+        self._subir(len(self.heap) - 1)
 
-    def atender_proximo(self):
-        """Remove e retorna o paciente com maior dor (raiz do heap)."""
+    def atender(self):
         if not self.heap:
-            print("Fila vazia! Nenhum paciente para atender.")
             return None
-        
-        raiz = self.heap[0]
-        ultimo_elemento = self.heap.pop()
-        
-        del self.posicao_paciente[raiz.id]
+
+        maior_prioridade = self.heap[0]
+        ultimo = self.heap.pop()
 
         if self.heap:
-            self.heap[0] = ultimo_elemento
-            self.posicao_paciente[ultimo_elemento.id] = 0
+            self.heap[0] = ultimo
             self._descer(0)
-            
-        print(f"⚕️ Atendendo agora: {raiz.nome} (Dor: {raiz.nivel_dor})")
-        return raiz
 
-    def alterar_prioridade(self, id_paciente, novo_nivel_dor):
-        """Meta do desafio: Modifica a dor de um paciente já na fila."""
-        if id_paciente not in self.posicao_paciente:
-            print("⚠️ Paciente não encontrado na fila de triagem.")
-            return
+        return maior_prioridade
 
-        idx = self.posicao_paciente[id_paciente]
-        paciente = self.heap[idx]
-        dor_antiga = paciente.nivel_dor
-        paciente.nivel_dor = novo_nivel_dor
+    def alterar_prioridade(self, nome, nova_dor):
+        for i, paciente in enumerate(self.heap):
+            if paciente.nome == nome:
+                dor_antiga = paciente.dor
+                paciente.dor = nova_dor
 
-        print(f"🔄 Atualizando {paciente.nome}: Dor foi de {dor_antiga} para {novo_nivel_dor}.")
+                if nova_dor > dor_antiga:
+                    self._subir(i)
+                else:
+                    self._descer(i)
 
-        # Se a dor aumentou, tenta subir no heap. Se diminuiu, tenta descer.
-        if novo_nivel_dor > dor_antiga:
-            self._subir(idx)
-        elif novo_nivel_dor < dor_antiga:
-            self._descer(idx)
+                return True
 
-    def exibir_fila(self):
-        print(f"📋 Fila atual (Representação do Heap): {self.heap}")
+        return False
+
+    def _subir(self, i):
+        while i > 0:
+            pai = (i - 1) // 2
+
+            if self.heap[i].dor <= self.heap[pai].dor:
+                break
+
+            self.heap[i], self.heap[pai] = self.heap[pai], self.heap[i]
+            i = pai
+
+    def _descer(self, i):
+        tamanho = len(self.heap)
+
+        while True:
+            maior = i
+            esquerda = 2 * i + 1
+            direita = 2 * i + 2
+
+            if esquerda < tamanho and self.heap[esquerda].dor > self.heap[maior].dor:
+                maior = esquerda
+
+            if direita < tamanho and self.heap[direita].dor > self.heap[maior].dor:
+                maior = direita
+
+            if maior == i:
+                break
+
+            self.heap[i], self.heap[maior] = self.heap[maior], self.heap[i]
+            i = maior
+
+    def mostrar_fila(self):
+        print(self.heap)
 
 
-# --- SIMULAÇÃO DO CASO ---
-if __name__ == "__main__":
-    triagem = TriagemMaxHeap()
+fila = MaxHeap()
 
-    # 1. Recebendo N pacientes
-    p1 = Paciente(101, "Ana", 4)
-    p2 = Paciente(102, "Bruno", 8)
-    p3 = Paciente(103, "Carlos", 2)
-    p4 = Paciente(104, "Daniela", 9)
+n = int(input("Digite a quantidade de pacientes: "))
 
-    print("--- 🔴 CHEGADA DE PACIENTES ---")
-    triagem.inserir_paciente(p1)
-    triagem.inserir_paciente(p2)
-    triagem.inserir_paciente(p3)
-    triagem.inserir_paciente(p4)
-    triagem.exibir_fila()
-    print()
+for i in range(n):
+    nome = input(f"Nome do paciente {i + 1}: ")
+    dor = int(input("Nível de dor de 1 a 10: "))
 
-    # Meta: Ajustar a prioridade de um paciente na fila
-    print("--- 🟡 META: ALTERANDO PRIORIDADES (Increase/Decrease Key) ---")
-    # Caso 1: A dor do Carlos piorou muito (Increase Key)
-    triagem.alterar_prioridade(103, 10) 
-    triagem.exibir_fila()
-    print()
+    while dor < 1 or dor > 10:
+        dor = int(input("Valor inválido. Digite dor de 1 a 10: "))
 
-    # Caso 2: A medicação inicial da Daniela fez efeito e a dor diminuiu (Decrease Key)
-    triagem.alterar_prioridade(104, 3)
-    triagem.exibir_fila()
-    print()
+    fila.inserir(Paciente(nome, dor))
 
-    print("--- 🟢 ATENDIMENTO DOS PACIENTES ---")
-    triagem.atender_proximo() # Deve ser o Carlos (Dor 10)
-    triagem.atender_proximo() # Deve ser o Bruno (Dor 8)
-    triagem.atender_proximo() # Deve ser a Daniela (Dor 3)
-    triagem.atender_proximo() # Deve ser a Ana (Dor 4)
+print("\nFila inicial:")
+fila.mostrar_fila()
+
+nome = input("\nDigite o nome do paciente para alterar prioridade: ")
+nova_dor = int(input("Novo nível de dor de 1 a 10: "))
+
+if fila.alterar_prioridade(nome, nova_dor):
+    print("\nPrioridade alterada com sucesso.")
+else:
+    print("\nPaciente não encontrado.")
+
+print("\nFila após alteração:")
+fila.mostrar_fila()
+
+print("\nOrdem de atendimento:")
+while fila.heap:
+    print(fila.atender())
